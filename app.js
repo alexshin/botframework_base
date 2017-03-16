@@ -1,59 +1,14 @@
-let restify = require('restify');
-let builder = require('botbuilder');
-
-// ------------
-//   Bot setup
-// ------------
-
 // Setup restify server
-let serverConfiguration = {
-    port: process.env.port || process.env.PORT || 8080
+let appSettings = {
+    port: process.env.port || process.env.PORT || 8080,
+    appId: process.env.APP_ID,
+    appPassword: process.env.APP_PASSWORD,
+    env: process.env.APP_ENVIRONMENT || 'local'
 };
 
-let server = restify.createServer();
+let bot = require('./environment/' + appSettings.env + '.js')(appSettings);
 
-server.listen(serverConfiguration.port, () => {
-    console.log(`${server.name} listening to ${server.url}`);
-});
-
-// Create bot
-let connector = new builder.ChatConnector({
-    appId: process.env.APP_ID,
-    appPassword: process.env.APP_PASSWORD
-});
-
-var bot = new builder.UniversalBot(connector);
-server.post('/api/messages', connector.listen());
-//Bot on
-bot.on('contactRelationUpdate', function (message) {
-    if (message.action === 'add') {
-        var name = message.user ? message.user.name : null;
-        var reply = new builder.Message()
-                .address(message.address)
-                .text("Hello %s... Thanks for adding me. Say 'hello' to see some great demos.", name || 'there');
-        bot.send(reply);
-    } else {
-        // delete their data
-    }
-});
-bot.on('typing', function (message) {
-  // User is typing
-});
-bot.on('deleteUserData', function (message) {
-    // User asked to delete their data
-});
-//=========================================================
-// Bots Dialogs
-//=========================================================
-String.prototype.contains = function(content){
-  return this.indexOf(content) !== -1;
-}
-bot.dialog('/', function (session) {
-    if(session.message.text.toLowerCase().contains('hello')){
-      session.send(`Hey, How are you?`);
-      }else if(session.message.text.toLowerCase().contains('help')){
-        session.send(`How can I help you?`);
-      }else{
-        session.send(`Sorry I don't understand you...`);
-      }
-});
+// Append commands
+require('./commands/deleteUserData.js')(bot);
+require('./commands/dialog.js')(bot);
+require('./commands/typing.js')(bot);
