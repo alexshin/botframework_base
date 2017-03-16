@@ -1,0 +1,19 @@
+{
+  "name": "magicball_bot",
+  "version": "1.0.0",
+  "description": "Implements magical ball functionality",
+  "main": "app.js",
+  "engines": {
+    "node": "7.7.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Alex Shinkevich <alex.shinkevich@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.7.0",
+    "restify": "^4.3.0"
+  }
+}
